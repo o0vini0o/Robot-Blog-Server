@@ -1,6 +1,6 @@
 import chalk from "chalk";
 import express from "express";
-import { Sequelize, DataTypes } from "sequelize";
+import { Sequelize, DataTypes, ValidationError } from "sequelize";
 import cors from "cors";
 
 const app = express();
@@ -8,7 +8,7 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json(), cors());
 
-const sequelize = new Sequelize(process.env.PG_URI);
+const sequelize = new Sequelize(process.env.PG_URI, { logging: false });
 const Robots = sequelize.define("robots", {
   title: { type: DataTypes.STRING, allowNull: false },
   content: { type: DataTypes.TEXT, allowNull: false },
@@ -24,6 +24,10 @@ app.post("/robots", async (req, res) => {
     res.status(201).json({ data: robot });
   } catch (error) {
     console.log(error);
+    if (error instanceof ValidationError) {
+      res.status(400).json({ msg: error.errors[0].message });
+      return;
+    }
     res.status(500).json({ msg: "Server error!" });
   }
 });
@@ -31,7 +35,7 @@ app.post("/robots", async (req, res) => {
 app.get("/robots", async (req, res) => {
   try {
     const robot = await Robots.findAll();
-    res.json({ data: robot });
+    res.json({ results: robot });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error!" });
@@ -46,7 +50,7 @@ app.get("/robots/:id", async (req, res) => {
       res.status(404).json({ msg: "Robot not found!" });
       return;
     }
-    res.json({ data: robot });
+    res.json({ results: robot });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error!" });
@@ -60,11 +64,11 @@ app.put("/robots/:id", async (req, res) => {
       { title, content, cover },
       { where: { id }, returning: true }
     );
-    if (rowCount !== 1) {
+    if (!rowCount) {
       res.status(404).json({ msg: "Robot not found!" });
       return;
     }
-    res.json({ msg: "Robot updated", data: robot });
+    res.json({ msg: "Robot updated", results: robot });
   } catch (error) {
     console.log(error);
     res.status(500).json({ msg: "Server error!" });
@@ -74,7 +78,7 @@ app.delete("/robots/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const rowCount = await Robots.destroy({ where: { id } });
-    if (rowCount !== 1) {
+    if (!rowCount) {
       res.status(404).json({ msg: "Robot not found!" });
       return;
     }
