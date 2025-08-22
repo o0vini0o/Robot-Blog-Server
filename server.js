@@ -12,7 +12,12 @@ const sequelize = new Sequelize(process.env.PG_URI, { logging: false });
 const Robots = sequelize.define("robots", {
   title: { type: DataTypes.STRING, allowNull: false },
   content: { type: DataTypes.TEXT, allowNull: false },
-  cover: { type: DataTypes.STRING, allowNull: false },
+  cover: {
+    type: DataTypes.STRING,
+    allowNull: false,
+    defaultValue:
+      "https://png.pngtree.com/background/20230410/original/pngtree-robot-blue-light-technology-artificial-intelligence-future-robot-picture-image_2380622.jpg",
+  },
 });
 Robots.sync();
 
