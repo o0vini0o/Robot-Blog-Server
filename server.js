@@ -21,8 +21,15 @@ const Robots = sequelize.define("robots", {
 });
 Robots.sync();
 
+function coverMiddleware(req, res, next) {
+  if (!req.body.cover || req.body.cover.trim() === "") {
+    req.body.cover = "https://png.pngtree.com/background/20230410/original/pngtree-robot-blue-light-technology-artificial-intelligence-future-robot-picture-image_2380622.jpg";
+  }
+  next();
+}
+
 // CRUD APIs
-app.post("/robots", async (req, res) => {
+app.post("/robots", coverMiddleware, async (req, res) => {
   const { title, content, cover } = req.body;
   try {
     const robot = await Robots.create({ title, content, cover });
@@ -61,7 +68,7 @@ app.get("/robots/:id", async (req, res) => {
     res.status(500).json({ msg: "Server error!" });
   }
 });
-app.put("/robots/:id", async (req, res) => {
+app.put("/robots/:id", coverMiddleware, async (req, res) => {
   const { id } = req.params;
   const { title, content, cover } = req.body;
   try {
