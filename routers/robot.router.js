@@ -1,5 +1,4 @@
 import { Router } from "express";
-import coverMiddleware from "../middlewares/coverMiddleware.js";
 import {
   createRobot,
   getAllRobots,
@@ -7,12 +6,13 @@ import {
   updateRobot,
   deleteRobot,
 } from "../controllers/robot.controller.js";
+import validatePostBody from "../middlewares/validatePostBody.js";
 const robotRouter = Router();
-robotRouter.post("/", coverMiddleware, createRobot);
+robotRouter.post("/", validatePostBody, createRobot);
 
 robotRouter.get("/", getAllRobots);
 
 robotRouter.get("/:id", getRobotById);
-robotRouter.put("/:id", coverMiddleware, updateRobot);
+robotRouter.put("/:id", validatePostBody, updateRobot);
 robotRouter.delete("/:id", deleteRobot);
 export default robotRouter;
