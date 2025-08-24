@@ -6,7 +6,7 @@ const createRobot = async (req, res) => {
   res.status(201).json(robot);
 };
 const getAllRobots = async (req, res) => {
-  const robot = await Robots.findAll();
+  const robot = await Robots.findAll({ order: [["updatedAt", "DESC"]] });
   res.json({ results: robot });
 };
 const getRobotById = async (req, res) => {
@@ -16,8 +16,10 @@ const getRobotById = async (req, res) => {
   res.json({ results: robot });
 };
 const updateRobot = async (req, res) => {
-  const { id } = req.params;
-  const { title, content, cover } = req.body;
+  const {
+    params: { id },
+    body: { title, content, cover },
+  } = req;
 
   const [rowCount, robot] = await Robots.update(
     { title, content, cover },
