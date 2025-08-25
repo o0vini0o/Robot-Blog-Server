@@ -7,9 +7,10 @@ const Robots = sequelize.define("robots", {
   cover: {
     type: DataTypes.STRING,
     allowNull: false,
-    defaultValue:
-      "https://png.pngtree.com/background/20230410/original/pngtree-robot-blue-light-technology-artificial-intelligence-future-robot-picture-image_2380622.jpg",
+  },
+  youtubeURL: {
+    type: DataTypes.STRING,
   },
 });
-Robots.sync();
+Robots.sync({ alter: true });
 export default Robots;
