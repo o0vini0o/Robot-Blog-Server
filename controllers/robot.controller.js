@@ -1,8 +1,8 @@
 import Robots from "../models/Robots.js";
 
 const createRobot = async (req, res) => {
-  const { title, content, cover } = req.body;
-  const robot = await Robots.create({ title, content, cover });
+  const { title, content, cover, youtubeURL } = req.body;
+  const robot = await Robots.create({ title, content, cover, youtubeURL });
   res.status(201).json(robot);
 };
 const getAllRobots = async (req, res) => {
@@ -18,11 +18,11 @@ const getRobotById = async (req, res) => {
 const updateRobot = async (req, res) => {
   const {
     params: { id },
-    body: { title, content, cover },
+    body: { title, content, cover, youtubeURL },
   } = req;
 
   const [rowCount, robot] = await Robots.update(
-    { title, content, cover },
+    { title, content, cover, youtubeURL },
     { where: { id }, returning: true }
   );
   if (!rowCount) throw new Error("Robot not found!", { cause: 404 });
